@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SOGUM - Intelligent Document Processing</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      padding: 40px;
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .logo-container {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo-container img {
+      max-width: 80px;
+      max-height: 80px;
+      object-fit: contain;
+    }
+
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .section-icon {
+      font-size: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .form-group input,
+    .form-group select {
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #d1d5db;
+    }
+
+    .upload-section,
+    .status-section,
+    .results-section,
+    .jobs-section {
+      margin-bottom: 40px;
+    }
+
+    #uploadBtn {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      font-size: 1rem;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s ease;
+    }
+
+    #uploadBtn:hover {
+      background: linear-gradient(135deg, #5a67d8, #6b46c1);
+    }
+
+    .progress-bar {
+      height: 10px;
+      background: #e5e7eb;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background-color: #667eea;
+      transition: width 0.3s ease;
+    }
+
+    .results-section,
+    .status-section,
+    .jobs-section {
+      border-top: 1px solid #e5e7eb;
+      padding-top: 30px;
+    }
+
+    .hidden { display: none; }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+      .form-group {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo-container">
+        <img src="images/SOGUM_LOGO.png" alt="SOGUM Logo" onerror="this.style.display='none'" />
+      </div>
+      <h1>Intelligent Document Processing</h1>
+      <p class="subtitle">Transform your documents with AI-powered extraction and analysis</p>
+    </div>
+
+    <div class="upload-section">
+      <h2><span class="section-icon">📤</span>Upload Document</h2>
+      <form id="uploadForm">
+        <div class="form-group">
+          <label for="file">Select Document</label>
+          <input type="file" id="file" accept=".pdf,.docx,.txt,.rtf,.jpg,.png" required>
+        </div>
+        <div class="form-group">
+          <label for="language">Processing Type</label>
+          <select id="language" required>
+            <option value="">Select processing type...</option>
+            <option value="extract">Text Extraction</option>
+            <option value="summarize">Document Summarization</option>
+            <option value="analyze">Content Analysis</option>
+            <option value="translate">Language Translation</option>
+            <option value="classify">Document Classification</option>
+            <option value="entity">Entity Recognition</option>
+            <option value="sentiment">Sentiment Analysis</option>
+            <option value="ocr">OCR Text Extraction</option>
+          </select>
+        </div>
+
+        <div id="translationOptions" class="form-group hidden">
+          <label for="sourceLanguage">From Language</label>
+          <select id="sourceLanguage">
+            <option value="">Select source language...</option>
+            <option value="en">English</option>
+            <option value="fr">French</option>
+            <option value="es">Spanish</option>
+            <option value="de">German</option>
+            <option value="zh">Chinese</option>
+            <option value="ha">Hausa</option>
+            <option value="yo">Yoruba</option>
+            <option value="ig">Igbo</option>
+          </select>
+
+          <label for="targetLanguage">To Language</label>
+          <select id="targetLanguage">
+            <option value="">Select target language...</option>
+            <option value="en">English</option>
+            <option value="fr">French</option>
+            <option value="es">Spanish</option>
+            <option value="de">German</option>
+            <option value="zh">Chinese</option>
+            <option value="ha">Hausa</option>
+            <option value="yo">Yoruba</option>
+            <option value="ig">Igbo</option>
+          </select>
+        </div>
+
+        <div id="ocrOptions" class="form-group hidden">
+          <label for="ocrLanguage">OCR Language</label>
+          <select id="ocrLanguage">
+            <option value="eng">English</option>
+            <option value="fra">French</option>
+            <option value="deu">German</option>
+            <option value="spa">Spanish</option>
+            <option value="ita">Italian</option>
+            <option value="por">Portuguese</option>
+            <option value="hau">Hausa</option>
+            <option value="yor">Yoruba</option>
+            <option value="ibo">Igbo</option>
+          </select>
+
+          <label for="confidenceThreshold">Confidence Threshold</label>
+          <input type="range" id="confidenceThreshold" min="0" max="100" value="30" step="5">
+          <span class="range-value">30%</span>
+        </div>
+
+        <button type="submit" id="uploadBtn">
+          <span id="uploadBtnText">🚀 Process Document</span>
+          <span id="uploadSpinner" class="spinner hidden"></span>
+        </button>
+      </form>
+    </div>
+
+    <div class="status-section">
+      <h2><span class="section-icon">📊</span>Processing Status</h2>
+      <div id="status">
+        <div class="status-indicator status-idle">
+          <span>⏸️</span>
+          <span>Ready to process</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+        </div>
+        <p id="statusMessage">Upload a document to get started</p>
+      </div>
+    </div>
+
+    <div class="results-section">
+      <h2><span class="section-icon">📋</span>Processing Results</h2>
+      <div id="results">
+        <p style="color: #718096; text-align: center; padding: 40px;">
+          Results will appear here after processing
+        </p>
+      </div>
+    </div>
+
+    <div class="jobs-section">
+      <h2><span class="section-icon">📁</span>Job Queue</h2>
+      <div id="jobsContainer"></div>
+      <div style="text-align: center; margin-top: 20px;">
+        <button id="refreshJobs">🔄 Refresh Jobs</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
