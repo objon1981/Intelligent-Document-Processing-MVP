@@ -10,5 +10,6 @@ pydantic==2.7.1
 pydantic-settings==2.2.1
 numpy==1.26.4
 aiofiles==23.2.0
+cv2
 rq
 redis

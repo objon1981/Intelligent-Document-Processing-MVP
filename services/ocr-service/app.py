@@ -4,6 +4,10 @@ from fastapi.middleware.cors import CORSMiddleware
 import pytesseract
 import logging
 import io
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+
 from config import Settings
 from shared.models import OCRRequest, OCRResult, HealthResponse
 from ocr_processor import OCRProcessor
@@ -25,7 +29,7 @@ app = FastAPI(
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["*"],  # Allow all origins for development
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -100,6 +104,10 @@ async def extract_text(
     except Exception as e:
         logger.error(f"OCR extraction failed: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("app:app", host="0.0.0.0", port=8003, reload=True)
 
 @app.get("/languages")
 async def get_supported_languages():

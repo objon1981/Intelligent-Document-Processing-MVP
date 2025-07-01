@@ -8,8 +8,8 @@ import logging
 import uuid
 import httpx
 
-from .processor import DocumentProcessor
-from .config import settings
+from processor import DocumentProcessor
+from config import settings
 from shared.database import get_db, SessionLocal
 from shared.models import JobMetadata, JobListResponse, JobModel
 
@@ -24,7 +24,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["*"],  # Allow all origins for development
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -209,3 +209,7 @@ async def get_job(
         raise HTTPException(status_code=404, detail="Job not found")
 
     return JobMetadata.model_validate(job)
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("app:app", host="0.0.0.0", port=8002, reload=True)  # type: ignore

@@ -32,7 +32,7 @@ class FileRecord(Base):
     processing_started_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     processing_completed_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     error_message: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    metadata: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    file_metadata: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     jobs: Mapped[List["JobModel"]] = relationship("JobModel", back_populates="file_record")
 
@@ -76,7 +76,7 @@ class FileMetadata(BaseModel):
     processing_started_at: Optional[str] = None
     processing_completed_at: Optional[str] = None
     error_message: Optional[str] = None
-    metadata: Optional[dict] = None
+    file_metadata: Optional[dict] = None
 
 class StatusUpdateRequest(BaseModel):
     status: str = Field(..., description="New status: processing, completed, failed")

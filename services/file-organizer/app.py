@@ -7,8 +7,12 @@ import logging
 import io
 import json
 
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+
 from config import Settings
-from shared.database import Database
+from shared.database import Database, get_db
 from shared.models import FileUploadResponse, FileMetadata, StatusUpdateRequest, FileListResponse
 from file_manager import FileManager
 
@@ -25,7 +29,7 @@ app = FastAPI(
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["*"],  # Allow all origins for development
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -45,7 +49,7 @@ async def startup_event():
     db_instance.create_tables()
     logger.info("Database tables created/verified")
 
-def get_db():
+def get_db_session():
     return next(db_instance.get_session())
 
 @app.get("/health")
@@ -111,7 +115,7 @@ async def get_file_metadata(file_id: str, db: Session = Depends(get_db)):
             processing_started_at=file_record.processing_started_at.isoformat() if getattr(file_record, "processing_started_at", None) else None,
             processing_completed_at=file_record.processing_completed_at.isoformat() if getattr(file_record, "processing_completed_at", None) else None,
             error_message=str(file_record.error_message) if file_record.error_message is not None else None,
-            metadata=json.loads(file_record.file_metadata if isinstance(file_record.file_metadata, str) else "") if getattr(file_record, "file_metadata", None) is not None else None
+            file_metadata=json.loads(file_record.file_metadata if isinstance(file_record.file_metadata, str) else "") if getattr(file_record, "file_metadata", None) is not None else None
         )
 
     except HTTPException:
@@ -183,7 +187,7 @@ async def list_files(
                 processing_started_at=file_record.processing_started_at.isoformat() if file_record.processing_started_at else None,
                 processing_completed_at=file_record.processing_completed_at.isoformat() if file_record.processing_completed_at else None,
                 error_message=str(file_record.error_message) if file_record.error_message else None,
-                metadata=json.loads(file_record.file_metadata) if file_record.file_metadata else None
+                file_metadata=json.loads(file_record.file_metadata) if file_record.file_metadata else None
             ))
 
         return FileListResponse(
@@ -227,4 +231,4 @@ async def root():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("app:app", host="0.0.0.0", port=8005, reload=True)  # type: ignore
+    uvicorn.run("app:app", host="0.0.0.0", port=8001, reload=True)  # type: ignore

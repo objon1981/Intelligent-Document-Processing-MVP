@@ -1,7 +1,7 @@
 from ocr_processor import OCRProcessor
 from config import settings
 
-processor = OCRProcessor(settings())
+processor = OCRProcessor(settings()) # type: ignore
 
 def run_ocr_job(file_content, filename, language="eng", file_id=None, confidence_threshold=30.0):
     import asyncio
@@ -12,7 +12,7 @@ def run_ocr_job(file_content, filename, language="eng", file_id=None, confidence
             file_content=file_content,
             filename=filename,
             language=language,
-            file_id=file_id,
+            file_id=file_id, # type: ignore
             confidence_threshold=confidence_threshold
         )
     )

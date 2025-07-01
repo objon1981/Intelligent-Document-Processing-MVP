@@ -10,7 +10,13 @@ from datetime import datetime
 from typing import Generator
 import uuid
 
-from config import settings
+import os
+
+class Config:
+    database_url = os.getenv("DATABASE_URL", "postgresql://postgres:password@localhost:5432/document_processing")
+    debug = os.getenv("DEBUG", "False").lower() == "true"
+
+settings = Config()
 
 # ---------------------------------
 # SQLAlchemy Base & Engine

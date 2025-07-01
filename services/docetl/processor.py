@@ -5,6 +5,11 @@ from typing import Dict, Optional
 from datetime import datetime
 from sqlalchemy.orm import Session
 
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+
+from services.docetl.config import settings
 from shared.models import JobMetadata, JobModel
 
 logger = logging.getLogger(__name__)
@@ -27,9 +32,9 @@ class DocumentProcessor:
         Process a document with proper database session handling
         """
         logger.info(f"[{job_id or 'N/A'}] Start processing document: {file_id} with language {language}")
-        
+
         start_time = datetime.utcnow()
-        
+
         try:
             # Get file metadata
             file_metadata = await self._get_file_metadata(file_id)
@@ -37,7 +42,7 @@ class DocumentProcessor:
 
             # Update file status to processing
             await self._update_file_status(file_id, "processing")
-            
+
             # Update job status if job_id and db session provided
             if job_id and db:
                 self._update_job_status(job_id, "processing", db)
@@ -74,19 +79,19 @@ class DocumentProcessor:
 
         except Exception as e:
             logger.error(f"[{job_id or 'N/A'}] Document processing failed for {file_id}: {str(e)}", exc_info=True)
-            
+
             # Update statuses to failed
             try:
                 await self._update_file_status(file_id, "failed", str(e))
             except Exception as file_error:
                 logger.error(f"Failed to update file status: {str(file_error)}")
-            
+
             if job_id and db:
                 try:
                     self._update_job_status(job_id, "failed", db, error_message=str(e))
                 except Exception as job_error:
                     logger.error(f"Failed to update job status: {str(job_error)}")
-            
+
             raise
 
     async def _get_file_metadata(self, file_id: str) -> Dict:
@@ -179,19 +184,19 @@ class DocumentProcessor:
                 return
 
             job.status = status
-            
+
             if status in ["completed", "failed"]:
                 job.completed_at = datetime.utcnow()
-            
+
             if result:
                 job.result = json.dumps(result)
-            
+
             if error_message:
                 job.error_message = error_message
 
             db.commit()
             logger.info(f"Job {job_id} status updated to '{status}' in DB.")
-            
+
         except Exception as e:
             logger.error(f"Failed to update job {job_id} in DB: {str(e)}")
             db.rollback()
